@@ -1,22 +1,30 @@
-import 'package:dd_review/data/review_card.dart';
+import 'package:dd_review/data/review_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ReviewPage extends StatefulWidget {
+  final List<ReviewData> data;
+
+  ReviewPage(this.data);
+
   @override
   State<StatefulWidget> createState() {
     return ReviewPageState();
   }
 }
 
-class ReviewPageState extends State<ReviewCardsWidget> {
+class ReviewPageState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
-    return ReviewCardsWidget();
+    return ReviewCardsWidget(widget.data);
   }
 }
 
 class ReviewCardsWidget extends StatefulWidget {
+  final List<ReviewData> data;
+
+  ReviewCardsWidget(this.data);
+
   @override
   State<StatefulWidget> createState() {
     return ReviewCardsWidgetState();
@@ -44,16 +52,16 @@ class ReviewCardsWidgetState extends State<ReviewCardsWidget> {
 
   Widget pageView() {
     return PageView(
-      controller: _controller,
-      children: [
-        card(ReviewData.getTestData(0)),
-        card(ReviewData.getTestData(1)),
-        card(ReviewData.getTestData(2)),
-      ],
-    );
+        controller: _controller,
+        children: List.from(widget.data.map((data) => card(data))));
   }
 
   Widget card(ReviewData data) {
-    return Card(elevation: 5, child: Center(child: Text(data.front.content + '\n--------------\n' + data.back.content)));
+    return Card(
+        elevation: 5,
+        child: Center(
+            child: Text(data.front.content +
+                '\n--------------\n' +
+                data.back.content)));
   }
 }
