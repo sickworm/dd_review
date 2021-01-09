@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dd_review/data/data_manager.dart';
 import 'package:flutter/material.dart';

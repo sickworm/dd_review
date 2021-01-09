@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dd_review/data/review_data.dart';
 import 'package:dd_review/l10n/localization_intl.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,18 +18,54 @@ class ReviewPage extends StatefulWidget {
 }
 
 class ReviewPageState extends State<ReviewPage> {
+  ReviewCardsController controller = ReviewCardsController();
+  int farthestPageIndex = -1;
+  bool get isShowButton => controller.currentPage <= farthestPageIndex;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
             child: Stack(
-          children: [ReviewCardsWidget(widget.data), ConfirmButtonWidget()],
+          children: [
+            Container(
+                margin: EdgeInsets.only(top: 40, bottom: 60),
+                child: ReviewPageWidget(
+                    data: widget.data,
+                    controller: controller,
+                    onClickAnswer: onClickAnswer)),
+            if (isShowButton) ConfirmButtonWidget(onClickConfirm)
+          ],
         )));
+  }
+
+  onClickAnswer() {
+    log("onClickAnswer");
+    if (isShowButton) {
+      return;
+    }
+
+    setState(() {
+      farthestPageIndex = controller.currentPage;
+    });
+  }
+
+  onClickConfirm(ReviewLevel level) {
+    log("onClickConfirm $level");
+    setState(() {
+      controller.nextPage();
+    });
   }
 }
 
+typedef ConfirmButtonCallback = void Function(ReviewLevel level);
+
 class ConfirmButtonWidget extends StatelessWidget {
+  final ConfirmButtonCallback onConfirm;
+
+  ConfirmButtonWidget(this.onConfirm);
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -35,38 +73,57 @@ class ConfirmButtonWidget extends StatelessWidget {
         child: Align(
             alignment: Alignment.bottomCenter,
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              button(l10n.easy),
-              button(l10n.normal),
-              button(l10n.hard)
+              button(l10n.easy, () => onConfirm(ReviewLevel.Easy)),
+              button(l10n.normal, () => onConfirm(ReviewLevel.Normal)),
+              button(l10n.hard, () => onConfirm(ReviewLevel.Hard))
             ])));
   }
 
-  Widget button(String text) {
+  Widget button(String text, VoidCallback onPressed) {
     return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: RaisedButton(onPressed: () => {}, child: Text(text)));
+        child: RaisedButton(onPressed: onPressed, child: Text(text)));
   }
 }
 
-class ReviewCardsWidget extends StatefulWidget {
-  final List<ReviewData> data;
+class ReviewCardsController {
+  ReviewPageWidgetState _state;
+  int _currentPage = 0;
 
-  ReviewCardsWidget(this.data);
+  int get currentPage => _currentPage;
+
+  attach(ReviewPageWidgetState state) {
+    _state = state;
+  }
+
+  nextPage() {
+    _state?.nextPage();
+    _currentPage = (_state.pageController.page.toInt() ?? 0) + 1;
+  }
+}
+
+class ReviewPageWidget extends StatefulWidget {
+  final List<ReviewData> data;
+  final ReviewCardsController controller;
+  final VoidCallback onClickAnswer;
+
+  ReviewPageWidget({this.data, this.controller, this.onClickAnswer});
 
   @override
   State<StatefulWidget> createState() {
-    return ReviewCardsWidgetState();
+    final state = ReviewPageWidgetState();
+    controller.attach(state);
+    return state;
   }
 }
 
-class ReviewCardsWidgetState extends State<ReviewCardsWidget> {
-  PageController _controller =
+class ReviewPageWidgetState extends State<ReviewPageWidget> {
+  final PageController pageController =
       PageController(initialPage: 0, viewportFraction: 0.8);
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
+  nextPage() {
+      pageController.nextPage(
+        duration: Duration(milliseconds: 200), curve: Curves.ease);
   }
 
   @override
@@ -74,18 +131,74 @@ class ReviewCardsWidgetState extends State<ReviewCardsWidget> {
     return pageView();
   }
 
-  Widget pageView() {
-    return PageView(
-        controller: _controller,
-        children: List.from(widget.data.map((data) => card(data))));
+  @override
+  dispose() {
+    super.dispose();
+    pageController.dispose();
   }
 
-  Widget card(ReviewData data) {
-    return Card(
-        elevation: 5,
-        child: Center(
-            child: Text(data.front.content +
-                '\n--------------\n' +
-                data.back.content)));
+  Widget pageView() {
+    return PageView(
+        controller: pageController,
+        physics: NeverScrollableScrollPhysics(),
+        children: List.from(widget.data.map((data) => ReviewCard(data, widget.onClickAnswer))));
+  }
+}
+
+class ReviewCard extends StatefulWidget {
+  final ReviewData data;
+  final VoidCallback onClickAnswer;
+
+  ReviewCard(this.data, this.onClickAnswer);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ReviewCardState();
+  }
+}
+
+class ReviewCardState extends State<ReviewCard> {
+  bool _isShowBack = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(bottom: 8),
+        child: new InkWell(
+            onTap: onClick,
+            child: Card(
+                elevation: 5,
+                child: Column(children: [
+                  Flexible(
+                      flex: 1,
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Card(
+                            elevation: 1,
+                            child:
+                                Center(child: Text(widget.data.front.content))),
+                      )),
+                  Flexible(
+                      flex: 1,
+                      child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Card(
+                              elevation: 1, child: Center(child: backView()))))
+                ]))));
+  }
+
+  onClick() {
+    setState(() {
+      _isShowBack = !_isShowBack;
+      widget.onClickAnswer();
+    });
+  }
+
+  backView() {
+    if (_isShowBack) {
+      return Text(widget.data.back.content);
+    } else {
+      return Text(l10n.clickToSeeAnswer);
+    }
   }
 }

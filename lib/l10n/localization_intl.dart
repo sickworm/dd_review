@@ -33,6 +33,7 @@ class L10n {
   String get easy => Intl.message('Easy', name: 'easy');
   String get normal => Intl.message('Normal', name: 'normal');
   String get hard => Intl.message('Hard', name: 'hard');
+  String get clickToSeeAnswer => Intl.message('点击查看答案', name: 'clickToSeeAnswer');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<L10n> {
