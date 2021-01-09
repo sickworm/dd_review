@@ -1,0 +1,28 @@
+{
+  "@@locale": "zh_CN",
+  "@@last_modified": "2021-01-09T16:27:14.027",
+  "title": "呆呆复习卡片",
+  "easy": "简单",
+  "normal": "还行",
+  "hard": "困难",
+  "@title": {
+    "placeholders": {},
+    "description": "",
+    "type": "text"
+  },
+  "@easy": {
+    "placeholders": {},
+    "description": "",
+    "type": "text"
+  },
+  "@normal": {
+    "placeholders": {},
+    "description": "",
+    "type": "text"
+  },
+  "@hard": {
+    "placeholders": {},
+    "description": "",
+    "type": "text"
+  }
+}

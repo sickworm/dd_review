@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dd_review/data/data_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'review/review.dart';
+import 'l10n/localization_intl.dart';
+import 'review/review_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,8 +16,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      builder: _init(),
+      localizationsDelegates: [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'), // 美国英语
+        const Locale('zh', 'CN'), // 中文简体
+      ],
+      onGenerateTitle: (context) => L10n.of(context).title,
+      builder: _init,
       navigatorObservers: [BotToastNavigatorObserver()],
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -23,8 +37,10 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  TransitionBuilder _init() {
-    return BotToastInit();
+  Widget _init(BuildContext context, Widget child) {
+    child = BotToastInit()(context, child);
+    L10n.init(context);
+    return child;
   }
 }
 
@@ -40,7 +56,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   void _startReview() async {
     final data = await DataManager.getData();
-    Navigator.pushReplacement(
+    Navigator.push(
         context, MaterialPageRoute(builder: (context) => ReviewPage(data)));
   }
 

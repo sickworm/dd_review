@@ -8,9 +8,9 @@ class MockDataSource implements IDataSource {
   @override
   Future<List<ReviewData>> getData() {
     return Future.value([
-      ReviewData.string('card 1 front', 'card 1 back'),
-      ReviewData.string('card 2 front', 'card 2 back'),
-      ReviewData.string('card 3 front', 'card 3back')
+      ReviewData.string('卡片问题 1', '卡片答案 1'),
+      ReviewData.string('卡片问题 2', '卡片答案 2'),
+      ReviewData.string('卡片问题 3', '卡片答案 3')
     ]);
   }
 }

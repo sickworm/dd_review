@@ -1,0 +1,23 @@
+{
+  "@@last_modified": "2021-01-09T16:30:41.906042",
+  "title": "Pocket Review",
+  "@title": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "easy": "Easy",
+  "@easy": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "normal": "Normal",
+  "@normal": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "hard": "Hard",
+  "@hard": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

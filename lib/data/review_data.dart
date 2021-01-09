@@ -1,6 +1,7 @@
 class ReviewData {
   final ReviewDataFront front;
   final ReviewDataBack back;
+  final DateTime nextReviewTime = DateTime.now();
 
   ReviewData(this.front, this.back);
 
@@ -18,4 +19,10 @@ class ReviewDataBack {
   final String content;
 
   ReviewDataBack(this.content);
+}
+
+enum ReviewLevel {
+  Easy,
+  Normal,
+  Hard
 }
