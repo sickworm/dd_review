@@ -24,6 +24,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "easy" : MessageLookupByLibrary.simpleMessage("Easy"),
     "hard" : MessageLookupByLibrary.simpleMessage("Hard"),
     "normal" : MessageLookupByLibrary.simpleMessage("Normal"),
-    "title" : MessageLookupByLibrary.simpleMessage("Pocket Review")
+    "title" : MessageLookupByLibrary.simpleMessage("DD Flashcards")
   };
 }

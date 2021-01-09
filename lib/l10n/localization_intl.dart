@@ -29,7 +29,7 @@ class L10n {
     return Localizations.of<L10n>(context, L10n);
   }
 
-  String get title => Intl.message('Pocket Review', name: 'title');
+  String get title => Intl.message('DD Flashcards', name: 'title');
   String get easy => Intl.message('Easy', name: 'easy');
   String get normal => Intl.message('Normal', name: 'normal');
   String get hard => Intl.message('Hard', name: 'hard');
