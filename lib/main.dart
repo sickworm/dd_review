@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dd_review/data/data_manager.dart';
+import 'package:dd_review/review/review_finish.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -10,29 +11,45 @@ void main() {
   runApp(MyApp());
 }
 
+typedef MyWidgetBuilder = Widget Function(RouteSettings context);
+
+final Map<String, MyWidgetBuilder> routes = {
+  "/": (_) => new MyHomePage(),
+  "/review": (settings) => new ReviewPage(settings.arguments),
+  "/review_finish": (_) => new ReviewFinishPage(),
+};
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: [
-        L10n.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [
-        const Locale('en', 'US'), // 美国英语
-        const Locale('zh', 'CN'), // 中文简体
-      ],
-      onGenerateTitle: (context) => L10n.of(context).title,
-      builder: _init,
-      navigatorObservers: [BotToastNavigatorObserver()],
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+        initialRoute: '/',
+        onGenerateRoute: (RouteSettings settings) {
+          final route = routes[settings.name];
+          if (route != null) {
+            return MaterialPageRoute(builder: (_) => route(settings));
+          }
+
+          BotToast.showText(text: l10n.pageError);
+          return MaterialPageRoute(builder: (context) => MyHomePage());
+        },
+        localizationsDelegates: [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          const Locale('en', 'US'), // 美国英语
+          const Locale('zh', 'CN'), // 中文简体
+        ],
+        onGenerateTitle: (context) => L10n.of(context).title,
+        builder: _init,
+        navigatorObservers: [BotToastNavigatorObserver()],
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ));
   }
 
   Widget _init(BuildContext context, Widget child) {
@@ -43,9 +60,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MyHomePage() : super();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -54,8 +69,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   void _startReview() async {
     final data = await DataManager.getData();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ReviewPage(data)));
+    Navigator.pushNamed(context, '/review', arguments: data);
   }
 
   void _addCard() {
@@ -68,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(l10n.title),
         ),
         body: Center(
           child: Column(

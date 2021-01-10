@@ -20,7 +20,10 @@ class ReviewPage extends StatefulWidget {
 class ReviewPageState extends State<ReviewPage> {
   ReviewCardsController controller = ReviewCardsController();
   int farthestPageIndex = -1;
+
   bool get isShowButton => controller.currentPage <= farthestPageIndex;
+
+  bool get isLastPage => controller.currentPage >= widget.data.length - 1;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +56,20 @@ class ReviewPageState extends State<ReviewPage> {
 
   onClickConfirm(ReviewLevel level) {
     log("onClickConfirm $level");
+    if (isLastPage) {
+      setState(() {
+        finishReview();
+      });
+      return;
+    }
+
     setState(() {
       controller.nextPage();
     });
+  }
+
+  finishReview() {
+    Navigator.pushNamed(context, '/review_finish');
   }
 }
 
@@ -90,6 +104,7 @@ class ReviewCardsController {
   ReviewPageWidgetState _state;
   int _currentPage = 0;
 
+  /// 当前页面，点击时增加，所以会比 PageView 先 +1
   int get currentPage => _currentPage;
 
   attach(ReviewPageWidgetState state) {
@@ -122,7 +137,7 @@ class ReviewPageWidgetState extends State<ReviewPageWidget> {
       PageController(initialPage: 0, viewportFraction: 0.8);
 
   nextPage() {
-      pageController.nextPage(
+    pageController.nextPage(
         duration: Duration(milliseconds: 200), curve: Curves.ease);
   }
 
@@ -141,7 +156,8 @@ class ReviewPageWidgetState extends State<ReviewPageWidget> {
     return PageView(
         controller: pageController,
         physics: NeverScrollableScrollPhysics(),
-        children: List.from(widget.data.map((data) => ReviewCard(data, widget.onClickAnswer))));
+        children: List.from(
+            widget.data.map((data) => ReviewCard(data, widget.onClickAnswer))));
   }
 }
 
