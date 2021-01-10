@@ -1,6 +1,5 @@
+import 'package:dd_review/data/data_manager.dart';
 import 'package:dd_review/data/review_data.dart';
-
-import 'file:///F:/StudioProjects/dd_review/lib/data/data_manager.dart';
 
 abstract class ReviewStatusUpdateCallback {
   onUpdate(List<ReviewData> data);
@@ -32,6 +31,10 @@ abstract class IReviewScheduler {
   Future<void> addReviewData(ReviewData data);
 
   Future<void> onReviewed(ReviewLevel level, ReviewData data);
+
+  registerCallback(ReviewStatusUpdateCallback callback);
+
+  unregisterCallback(ReviewStatusUpdateCallback callback);
 }
 
 /// 每次启动全量读取数据进行复习，复习后删除
@@ -41,8 +44,11 @@ class DummyReviewScheduler with _CallbackServer implements IReviewScheduler {
 
   @override
   Future<void> init() async {
-    _initJob = dataManager.getData();
-    _cache = await _initJob;
+    _initJob = dataManager
+        .init()
+        .then((value) => dataManager.getData())
+        .then((value) => _cache = value);
+    return _initJob;
   }
 
   @override
@@ -67,4 +73,4 @@ class DummyReviewScheduler with _CallbackServer implements IReviewScheduler {
   }
 }
 
-final reviewScheduler = DummyReviewScheduler();
+final IReviewScheduler reviewScheduler = DummyReviewScheduler();

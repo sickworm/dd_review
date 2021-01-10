@@ -39,8 +39,7 @@ class _TextAddCardPageState extends State<TextAddCardPage> {
   }
 
   _onPressed() async {
-    final data = ReviewData(ReviewDataFront(frontController.text),
-        ReviewDataBack(backController.text));
+    final data = ReviewData.text(frontController.text, backController.text);
     await reviewScheduler.addReviewData(data);
     BotToast.showText(text: 'add success');
   }

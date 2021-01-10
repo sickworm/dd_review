@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dd_review/add_card/pic_add_card.dart';
 import 'package:dd_review/add_card/text_add_card_page.dart';
 import 'package:dd_review/data/review_data.dart';
 import 'package:dd_review/review/review_finish.dart';
@@ -22,6 +23,7 @@ final Map<String, MyWidgetBuilder> routes = {
   "/review": (settings) => new ReviewPage(settings.arguments),
   "/review_finish": (_) => new ReviewFinishPage(),
   "/add_card_text": (_) => new TextAddCardPage(),
+  "/add_card_pic": (_) => new PicAddCardPage(),
 };
 
 class MyApp extends StatelessWidget {
@@ -108,9 +110,14 @@ class _MyHomePageState extends State<MyHomePage>
     Navigator.pushNamed(context, '/review', arguments: data);
   }
 
-  void _addCard() {
+  void _addTextCard() {
     log('_addCard');
     Navigator.pushNamed(context, '/add_card_text');
+  }
+
+  void _addPicCard() {
+    log('_addCard');
+    Navigator.pushNamed(context, '/add_card_pic');
   }
 
   @override
@@ -129,9 +136,13 @@ class _MyHomePageState extends State<MyHomePage>
                 child: Text('Start Review'),
               ),
               RaisedButton(
-                onPressed: _addCard,
-                child: Text('Add Card'),
-              )
+                onPressed: _addTextCard,
+                child: Text('Add Text Card'),
+              ),
+              RaisedButton(
+                onPressed: _addPicCard,
+                child: Text('Add Pic Card'),
+              ),
             ],
           ),
         ));

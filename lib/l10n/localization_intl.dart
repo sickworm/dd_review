@@ -51,6 +51,13 @@ class L10n {
         name: 'remainReviewCount',
         args: [count],
       );
+
+  String get getFailed => Intl.message('获取失败', name: 'getFailed');
+
+  String get saveFailed => Intl.message('保存失败', name: 'saveFailed');
+
+  String get processPicFailed =>
+      Intl.message('处理图片失败', name: 'processPicFailed');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<L10n> {

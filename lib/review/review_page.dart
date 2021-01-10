@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dd_review/data/review_data.dart';
 import 'package:dd_review/l10n/localization_intl.dart';
@@ -197,15 +198,17 @@ class ReviewCardState extends State<ReviewCard> {
                         padding: EdgeInsets.all(8.0),
                         child: Card(
                             elevation: 1,
-                            child:
-                                Center(child: Text(widget.data.front.content))),
+                            child: Center(
+                                child: Text(widget.data.front.content.value))),
                       )),
                   Flexible(
                       flex: 1,
                       child: Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Card(
-                              elevation: 1, child: Center(child: backView()))))
+                              elevation: 1,
+                              child:
+                                  Center(child: backView(widget.data.back)))))
                 ]))));
   }
 
@@ -216,11 +219,15 @@ class ReviewCardState extends State<ReviewCard> {
     });
   }
 
-  backView() {
-    if (_isShowBack) {
-      return Text(widget.data.back.content);
-    } else {
+  backView(ReviewDataBack data) {
+    if (!_isShowBack) {
       return Text(l10n.clickToSeeAnswer);
+    }
+
+    if (data.content.type == ReviewContentType.PIC) {
+      return Image.file(File(data.content.value));
+    } else {
+      return Text(data.content.value);
     }
   }
 }

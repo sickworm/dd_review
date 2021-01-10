@@ -5,24 +5,39 @@ class ReviewData {
 
   ReviewData(this.front, this.back);
 
-  ReviewData.string(String front, String back)
-      : this(ReviewDataFront(front), ReviewDataBack(back));
+  ReviewData.text(String front, String back)
+      : this(ReviewDataFront(ReviewContent(ReviewContentType.TEXT, front)),
+            ReviewDataBack(ReviewContent(ReviewContentType.TEXT, back)));
+
+  ReviewData.pic(String front, String back)
+      : this(ReviewDataFront(ReviewContent(ReviewContentType.PIC, front)),
+            ReviewDataBack(ReviewContent(ReviewContentType.PIC, back)));
+
+  ReviewData.textPic(String front, String back)
+      : this(ReviewDataFront(ReviewContent(ReviewContentType.TEXT, front)),
+            ReviewDataBack(ReviewContent(ReviewContentType.PIC, back)));
 }
 
 class ReviewDataFront {
-  final String content;
+  final ReviewContent content;
 
   ReviewDataFront(this.content);
 }
 
 class ReviewDataBack {
-  final String content;
+  final ReviewContent content;
 
   ReviewDataBack(this.content);
 }
 
-enum ReviewLevel {
-  Easy,
-  Normal,
-  Hard
+/// Uri
+class ReviewContent {
+  final ReviewContentType type;
+  final String value;
+
+  ReviewContent(this.type, this.value);
 }
+
+enum ReviewContentType { TEXT, PIC }
+
+enum ReviewLevel { Easy, Normal, Hard }
