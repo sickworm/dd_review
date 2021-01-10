@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dd_review/add_card/text_add_card_page.dart';
 import 'package:dd_review/data/review_data.dart';
 import 'package:dd_review/review/review_finish.dart';
 import 'package:dd_review/scheduler/scheduler.dart';
@@ -18,6 +21,7 @@ final Map<String, MyWidgetBuilder> routes = {
   "/main": (_) => new MyHomePage(),
   "/review": (settings) => new ReviewPage(settings.arguments),
   "/review_finish": (_) => new ReviewFinishPage(),
+  "/add_card_text": (_) => new TextAddCardPage(),
 };
 
 class MyApp extends StatelessWidget {
@@ -82,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
     reviewScheduler.registerCallback(this);
-    reviewScheduler.getData().then((value) => onUpdate(value));
+    reviewScheduler.getReviewData().then((value) => onUpdate(value));
   }
 
   @override
@@ -99,14 +103,14 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   void _startReview() async {
-    final data = await reviewScheduler.getData();
+    log('_startReview');
+    final data = await reviewScheduler.getReviewData();
     Navigator.pushNamed(context, '/review', arguments: data);
   }
 
   void _addCard() {
-    setState(() {
-      BotToast.showText(text: "_addCard");
-    });
+    log('_addCard');
+    Navigator.pushNamed(context, '/add_card_text');
   }
 
   @override

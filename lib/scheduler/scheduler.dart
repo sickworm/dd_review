@@ -1,5 +1,6 @@
-import 'package:dd_review/data/data_manager.dart';
 import 'package:dd_review/data/review_data.dart';
+
+import 'file:///F:/StudioProjects/dd_review/lib/data/data_manager.dart';
 
 abstract class ReviewStatusUpdateCallback {
   onUpdate(List<ReviewData> data);
@@ -26,7 +27,9 @@ mixin _CallbackServer {
 abstract class IReviewScheduler {
   Future<void> init();
 
-  Future<List<ReviewData>> getData();
+  Future<List<ReviewData>> getReviewData();
+
+  Future<void> addReviewData(ReviewData data);
 
   Future<void> onReviewed(ReviewLevel level, ReviewData data);
 }
@@ -43,9 +46,17 @@ class DummyReviewScheduler with _CallbackServer implements IReviewScheduler {
   }
 
   @override
-  Future<List<ReviewData>> getData() async {
+  Future<List<ReviewData>> getReviewData() async {
     await _initJob;
     return List.from(_cache);
+  }
+
+  @override
+  Future<void> addReviewData(ReviewData data) async {
+    await _initJob;
+    await dataManager.addData(data);
+    _cache.add(data);
+    _dispatch(_cache);
   }
 
   @override
