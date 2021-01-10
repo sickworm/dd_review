@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dd_review/data/data_manager.dart';
+import 'package:dd_review/data/review_data.dart';
 import 'package:dd_review/review/review_finish.dart';
+import 'package:dd_review/scheduler/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -14,7 +15,7 @@ void main() {
 typedef MyWidgetBuilder = Widget Function(RouteSettings context);
 
 final Map<String, MyWidgetBuilder> routes = {
-  "/": (_) => new MyHomePage(),
+  "/main": (_) => new MyHomePage(),
   "/review": (settings) => new ReviewPage(settings.arguments),
   "/review_finish": (_) => new ReviewFinishPage(),
 };
@@ -23,11 +24,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        initialRoute: '/',
+        initialRoute: '/main',
         onGenerateRoute: (RouteSettings settings) {
+          if (settings.name == '/') {
+            return null;
+          }
+
           final route = routes[settings.name];
           if (route != null) {
-            return MaterialPageRoute(builder: (_) => route(settings));
+            return MaterialPageRoute(
+                settings: RouteSettings(name: settings.name),
+                builder: (_) => route(settings));
           }
 
           BotToast.showText(text: l10n.pageError);
@@ -55,6 +62,7 @@ class MyApp extends StatelessWidget {
   Widget _init(BuildContext context, Widget child) {
     child = BotToastInit()(context, child);
     L10n.init(context);
+    reviewScheduler.init();
     return child;
   }
 }
@@ -66,9 +74,32 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    implements ReviewStatusUpdateCallback {
+  int remainCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    reviewScheduler.registerCallback(this);
+    reviewScheduler.getData().then((value) => onUpdate(value));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    reviewScheduler.unregisterCallback(this);
+  }
+
+  @override
+  onUpdate(List<ReviewData> data) {
+    setState(() {
+      remainCount = data.length;
+    });
+  }
+
   void _startReview() async {
-    final data = await DataManager.getData();
+    final data = await reviewScheduler.getData();
     Navigator.pushNamed(context, '/review', arguments: data);
   }
 
@@ -88,11 +119,9 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Today you have 8 cards to review',
-              ),
+              Text(l10n.remainReviewCount(remainCount)),
               RaisedButton(
-                onPressed: _startReview,
+                onPressed: remainCount > 0 ? _startReview : null,
                 child: Text('Start Review'),
               ),
               RaisedButton(

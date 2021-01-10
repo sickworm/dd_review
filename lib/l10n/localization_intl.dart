@@ -45,6 +45,12 @@ class L10n {
   String get returnToMain => Intl.message('返回主界面', name: 'returnToMain');
 
   String get pageError => Intl.message('页面出错啦', name: 'pageError');
+
+  String remainReviewCount(int count) => Intl.message(
+        '今天还有 $count 个卡片需要复习',
+        name: 'remainReviewCount',
+        args: [count],
+      );
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<L10n> {

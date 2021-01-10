@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dd_review/data/review_data.dart';
 import 'package:dd_review/l10n/localization_intl.dart';
+import 'package:dd_review/scheduler/scheduler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -38,7 +39,7 @@ class ReviewPageState extends State<ReviewPage> {
                     data: widget.data,
                     controller: controller,
                     onClickAnswer: onClickAnswer)),
-            if (isShowButton) ConfirmButtonWidget(onClickConfirm)
+            if (isShowButton) ConfirmButtonWidget(onReviewed)
           ],
         )));
   }
@@ -54,8 +55,11 @@ class ReviewPageState extends State<ReviewPage> {
     });
   }
 
-  onClickConfirm(ReviewLevel level) {
-    log("onClickConfirm $level");
+  onReviewed(ReviewLevel level) {
+    log("onClickConfirm $level ${widget.data.length}");
+
+    reviewScheduler.onReviewed(level, widget.data[controller.currentPage]);
+
     if (isLastPage) {
       setState(() {
         finishReview();
@@ -69,6 +73,7 @@ class ReviewPageState extends State<ReviewPage> {
   }
 
   finishReview() {
+    log("finishReview");
     Navigator.pushNamed(context, '/review_finish');
   }
 }
@@ -112,6 +117,7 @@ class ReviewCardsController {
   }
 
   nextPage() {
+    log("nextPage");
     _state?.nextPage();
     _currentPage = (_state.pageController.page.toInt() ?? 0) + 1;
   }

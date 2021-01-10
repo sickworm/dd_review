@@ -4,7 +4,7 @@ abstract class IDataSource {
   Future<List<ReviewData>> getData();
 }
 
-class MockDataSource implements IDataSource {
+class DummyDataSource extends IDataSource {
   @override
   Future<List<ReviewData>> getData() {
     return Future.value([
@@ -15,5 +15,4 @@ class MockDataSource implements IDataSource {
   }
 }
 
-// ignore: non_constant_identifier_names
-final DataManager = MockDataSource();
+final dataManager = DummyDataSource();
